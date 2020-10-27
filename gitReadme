@@ -1,0 +1,15 @@
+This is a readme about the git commands I am doing
+
+#local stuff
+git init
+get add <file/directory>
+git commit -m "<insert comment stuff>"
+
+
+#remote stuff
+git pull
+git push
+?? git push -u origin master
+
+
+ 
