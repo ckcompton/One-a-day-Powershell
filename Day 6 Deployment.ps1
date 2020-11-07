@@ -3,10 +3,10 @@ Start-Sleep -Seconds 1
 
 Set-ItemProperty -Path REGISTRY::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 0
 
-If (Get-NetAdapter | where Status -eq "Up" | select -ExpandProperty MacAddress) {
+If (Get-NetAdapter | Where-Object Status -eq "Up" | Select-Object -ExpandProperty MacAddress) {
 
     #This will store the MAC of the connection closest to the bottom. Assuming that is what is plugged in, it needs to be plugged in.
-    $upmac = Get-NetAdapter | where Status -eq "Up" | select -ExpandProperty MacAddress
+    $upmac = Get-NetAdapter | Where-Object Status -eq "Up" | Select-Object -ExpandProperty MacAddress
 
     #Converts the MAC to decimal for arithmetic operations
     $upmacindecimal = [UInt64] "0x$($upmac -replace '-')"
@@ -26,10 +26,10 @@ If (Get-NetAdapter | where Status -eq "Up" | select -ExpandProperty MacAddress) 
      
 
     #upmac plus 1 found
-    if ( (Get-NetAdapter | select -ExpandProperty MacAddress) -eq $higherMACinHex ) {
+    if ( (Get-NetAdapter | Select-Object -ExpandProperty MacAddress) -eq $higherMACinHex ) {
          
-        $higherMACindex = Get-NetAdapter | Where MacAddress -LIKE $higherMACinHex | Select -ExpandProperty ifIndex
-        $higherMACname = Get-NetAdapter | Where MacAddress -LIKE $higherMACinHex | Select -ExpandProperty Name
+        $higherMACindex = Get-NetAdapter | Where-Object MacAddress -LIKE $higherMACinHex | Select-Object -ExpandProperty ifIndex
+        $higherMACname = Get-NetAdapter | Where-Object MacAddress -LIKE $higherMACinHex | Select-Object -ExpandProperty Name
 
     }
             
@@ -134,7 +134,7 @@ If (Get-NetAdapter | where Status -eq "Up" | select -ExpandProperty MacAddress) 
             Write-Output  " "
 
             #Disable the other NICS
-            Disable-NetAdapter -Name (Get-NetAdapter | Where MacAddress -NotMatch $higherMACinHex.SubString(0, 2)).Name -Confirm:$false
+            Disable-NetAdapter -Name (Get-NetAdapter | Where-Object MacAddress -NotMatch $higherMACinHex.SubString(0, 2)).Name -Confirm:$false
 
             #Disable Ipv6
             Disable-NetAdapterBinding -Name "*" -ComponentID ms_tcpip6
@@ -201,7 +201,7 @@ If (Get-NetAdapter | where Status -eq "Up" | select -ExpandProperty MacAddress) 
 
 
 
-    If ($match_found = "False") {
+    If ($match_found -eq "False") {
         Write-Output " No match found for " $upmac
         Set-ItemProperty -Path REGISTRY::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System -Name EnableLUA -Value 1
 
@@ -229,7 +229,7 @@ If (Get-NetAdapter | where Status -eq "Up" | select -ExpandProperty MacAddress) 
     #Write-Output $minusMACinHex
 
     #upmac minus 1 found
-    if ( (Get-NetAdapter | select -ExpandProperty MacAddress) -eq $minusMACinHex ) {
+    if ( (Get-NetAdapter | Select-Object -ExpandProperty MacAddress) -eq $minusMACinHex ) {
         Write-Output "The network cable was plugged into the Top Nic, please plug into the bottom"
         Read-Host "Press enter"
     }
